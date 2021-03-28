@@ -1,3 +1,3 @@
 {
-    "mongoURI": "mongodb+srv://mutebinuhu:<lorem_ipsum>@cluster0.atxrd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    "mongoURI": "mongodb+srv://mutebinuhu:lorem_ipsum@cluster0.atxrd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 }
