@@ -4,6 +4,10 @@ const {body, validationResult} = require('express-validator');
 const User = require('../../Models/User');
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const config = require('config');
+const jwt = require('jsonwebtoken');
+
+
 //@router GET/api/users 
 //@descr register user
 //@access public
@@ -16,34 +20,43 @@ body('password', 'Password is required').not().isEmpty()
     if(!errors.isEmpty()){
         res.status(400).json({errors: errors.array()})
     }
-    const {name, email, password} = req.body;
+    const {email, name, password} = req.body;
     try {
-        const user = await User.findOne({email});
+        let user = await User.findOne({email})
         if(user){
-            return res.send(400).json({errors:[{msg:"User already exits"}]})
+           return  res.status(400).json({errors:[{msg:"user exists"}]})
         }
-        const avatar = gravatar.url(email, {
+        let avatar = gravatar.url(email,{
             s: '200',
             r: 'pg',
             d: 'mm'
-        });
-        
-        userData = new User({
+        } );
+        user = new User({
             name,
             email,
             password,
             avatar
-        });
+        })
+        //bcrypt
+        let salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        await user.save();
+        //webtoken
+        let payload = {
+            user: {
+                id:user.id
+            }
+        }
+        jwt.sign(payload, config.get('jwtSecret'), {expiresIn: 360000},(err, token)=>{
+            if(err) throw err;
+        const {name, description} = req.body
+            res.send({token:token, data: user})
+        })
     
-        const salt = await bcrypt.genSalt(10);
-        userData.password = await bcrypt.hash(password, salt);
-        await userData.save();
-        console.log(userData);
-        res.send("User created successfully");
-
-
     } catch (error) {
-        console.log(error.message)
+       console.log(error.message);
+       res.send("server error");
     }
+    
 });
 module.exports = Router;
