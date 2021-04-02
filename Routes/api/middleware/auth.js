@@ -9,6 +9,7 @@ const config = require('config')
         }
         try {
             const decoded = jwt.verify(token,config.get('jwtSecret'))
+
             req.user = decoded.user;
         next();
 

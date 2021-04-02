@@ -8,6 +8,8 @@ app.use('/api/posts', require('./Routes/api/posts'));
 app.use('/api/profile', require('./Routes/api/profile'));
 app.use('/api/auth', require('./Routes/api/auth'));
 app.use('/api/hobbies', require('./Routes/api/hobbies'));
+app.use('/api/comingSoonPage', require('./Routes/api/comingSoon'));
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, ()=>{
