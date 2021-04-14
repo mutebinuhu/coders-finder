@@ -12,9 +12,9 @@ const jwt = require('jsonwebtoken');
 Router.get('/', authMiddleWare, async (req, res)=>{
     try {
        const userData = await User.findById(req.user.id).select('-password');
-       res.status(200).json({
-           data:userData
-       })
+       res.status(200).json(
+    userData
+       )
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Server error')
