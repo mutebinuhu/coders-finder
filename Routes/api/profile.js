@@ -32,7 +32,7 @@ Router.get('/me', auth, async(req, res)=>{
 Router.post('/',[auth, [
     body('status', 'Status is required').not().isEmpty(),
     body('skills', "Skills are required").not().isEmpty()
-]], (req, res)=>{
+]],async (req, res)=>{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         res.status(400).json({errors:errors.array()});
@@ -51,21 +51,42 @@ Router.post('/',[auth, [
         instagram,
         linkedIn
     } = req.body;
+    //build the profile object
     const profileFields = {}
     profileFields.user = req.user.id
-    if(status) profileFields.status = status
     if(company) profileFields.company = company;
     if(website) profileFields.website = website;
     if(location) profileFields.location = location;
     if(bio) profileFields.bio = bio;
+    if(status) profileFields.status = status;
     if(skills){
         profileFields.skills = skills.split(",").map(skills=>skills)
     }
-    res.json({
-        data:profileFields
-    })
+    //build social object
+    profileFields.social = {};
+    if(githubusername) profileFields.social.githubusername = githubusername
+    if(youtube) profileFields.social.youtube = youtube
+    if(twitter) profileFields.social.twitter = twitter
+    if(instagram) profileFields.social.instagram = instagram
+    if(facebook) profileFields.social.facebook = facebook
+    if(linkedIn) profileFields.social.linkedIn = linkedIn
 
-   
+    //find profile
+    try{
+        let profile = await Profile.findOne({user: req.user.id});
+        if(profile){
+            profile = await Profile.findOneAndUpdate({user: req.user.id}, {$set: profileFields}, {new: true})
+            return res.json(profile)
+        }
+        //save if profile not found
+        profile = new Profile(profileFields);
+        await profile.save()
+        res.json(profile)
+        console.log(profile)
+    }catch(err){
+        console.log(err.message)
+        res.send("server error");
+    }
 
 });
 
