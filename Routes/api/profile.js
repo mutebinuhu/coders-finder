@@ -82,11 +82,14 @@ Router.post('/',[auth, [
         profile = new Profile(profileFields);
         await profile.save()
         res.json(profile)
-        console.log(profile)
     }catch(err){
         console.log(err.message)
-        res.send("server error");
+        res.status(500).send("server error");
     }
+
+    //@router POST/api/profile 
+    //@descr add user profile
+    //@access private
 
 });
 
