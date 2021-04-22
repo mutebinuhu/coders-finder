@@ -119,7 +119,7 @@ Router.get('/user/:user_id', async (req,res)=>{
     }
 })
     //@router DELETE/api/profile/
-    //@descr delete Profile
+    //@descr delete Profile and user
     //@access private
 Router.delete('/', auth, async (req,res)=>{
     try {
@@ -131,7 +131,41 @@ Router.delete('/', auth, async (req,res)=>{
         res.status(500).send("server error")
     }
 })
+//@router PUT/api/profile/
+    //@descr update Profile
+    //@access private
+Router.put('/', async (req, res)=>{
+        const {
+            title,
+            company,
+            location,
+            from,
+            to,
+            current,
+            description
+        } = req.body;
+            
+        const newExp={
+        title,
+        company,
+        location,
+        from,
+        to,
+        current,
+        description
+        }
+            try {
+                const profile = await Profile.findOne({user: '60813889e2ebeb22389630d5'});
+                profile.experience.unshift(newExp)
+                await profile.save()
+                res.json(profile);
+            } catch (error) {
+                console.log(error.message);
+                res.send("server error")
+            }
 
+         
+})
 
 
 module.exports = Router;
