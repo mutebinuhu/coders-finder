@@ -134,7 +134,18 @@ Router.delete('/', auth, async (req,res)=>{
 //@router PUT/api/profile/
     //@descr update Profile
     //@access private
-Router.put('/', async (req, res)=>{
+Router.put('/experience',[[ 
+    body('title', ',Title is required').not().isEmpty(),
+    body('location', 'Location is required').not().isEmpty(),
+    body('company', 'Company is required').not().isEmpty(),
+    body('to', 'To required').not().isEmpty(),
+    body('from', 'From is required').not().isEmpty(),
+    body('current', 'Current is required').not().isEmpty(),
+    body('description', 'Description is required').not().isEmpty()
+
+
+
+],  auth], async (req, res)=>{
         const {
             title,
             company,
@@ -144,6 +155,11 @@ Router.put('/', async (req, res)=>{
             current,
             description
         } = req.body;
+
+       const errors = validationResult(req);
+       if (!errors.isEmpty()) {
+           res.status(500).json({msg: errors.array()})
+       }
             
         const newExp={
         title,
@@ -154,15 +170,16 @@ Router.put('/', async (req, res)=>{
         current,
         description
         }
-            try {
-                const profile = await Profile.findOne({user: '60813889e2ebeb22389630d5'});
-                profile.experience.unshift(newExp)
-                await profile.save()
-                res.json(profile);
-            } catch (error) {
-                console.log(error.message);
-                res.send("server error")
-            }
+      
+        try {
+            const profile = await Profile.findOne({user: '60813889e2ebeb22389630d5'});
+            profile.experience.unshift(newExp)
+            await profile.save()
+            res.json(profile);
+        } catch (error) {
+            console.log(error.message);
+            res.send("server error")
+        }
 
          
 })
