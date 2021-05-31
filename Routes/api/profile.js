@@ -172,7 +172,7 @@ Router.put('/experience',[[
         }
       
         try {
-            const profile = await Profile.findOne({user: '60813889e2ebeb22389630d5'});
+            const profile = await Profile.findOne({user: req.user.id});
             profile.experience.unshift(newExp)
             await profile.save()
             res.json(profile);
