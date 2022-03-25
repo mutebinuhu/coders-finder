@@ -21,7 +21,7 @@ Router.get('/me', auth, async(req, res)=>{
         res.json(profileData)
     } catch (error) {
         return next(error)
-        console.log("errors---", error.message)
+        console.log("errors-", error.message);
         res.status(500).send("server error")
     }
     

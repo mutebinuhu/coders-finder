@@ -1,54 +1,48 @@
 import React, {Fragment, useState} from 'react'
 import {Link} from 'react-router-dom';
-import axios from 'axios'
+import axios from 'axios';
+import {connect} from 'react-redux'
+import  setAlert  from '../../actions/alerts';
+import register from '../../actions/auth';
 
-const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    password2: ''
-  });
-  const {name, email, password,password2 } = formData;
-  const onChange =(e)=>{
-    setFormData({
-      ...formData, [e.target.name]:e.target.value
-    })
-  }
-  const handleSubmit = async (e)=>{
+const Register = ({setAlert, register}) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('');
+  
+  const handleSubmit = async(e) =>{
     e.preventDefault();
-   if(password !== password2){
-     console.log('passwords dont much')
-   }else{
-   try {
-    const newUser={
-      name,email, password
+  
+    if(!password){
+      console.log("password is required")
+    }else if(password.length < 7){
+      setAlert("password too short", "danger")
+    }else if(password !== confirm){
+      console.log("passwords dont much")
+      setAlert("passwords dont much", "danger")
+
+    }else{
+      const newUser = {name, email, password};
+        register(newUser)
+       
     }
-    const config = {
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    }
-    const body = JSON.stringify(newUser)
-    const res = await axios.post('/api/users', body, config)
-    console.log(res.data.token)
-   } catch (err) {
-     console.error(err.response)
-   }
-   }
-   
   }
+
+
+  
+
     return (
         <Fragment>
            <section className="container">
       <h1 className="large text-primary">Sign Up</h1>
       <p className="lead"><i className="fas fa-user"></i> Create Your Account</p>
-      <form className="form" onSubmit={e=>handleSubmit(e)}>
+      <form className="form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <input type="text" placeholder="Name" name="name" value={name} onChange={e=>onChange(e)} required/>
+          <input type="text" placeholder="Name" name="name" value={name} onChange={(e)=>setName(e.target.value)} />
         </div>
         <div className="form-group">
-          <input type="email" placeholder="Email Address" name="email" value={email} onChange={e=>onChange(e)} required />
+          <input type="email" placeholder="Email Address" name="email" value={email} onChange={(e)=>setEmail(e.target.value)}  />
           <small className="form-text"
             >This site uses Gravatar so if you want a profile image, use a
             Gravatar email</small
@@ -59,8 +53,8 @@ const Register = () => {
             type="password"
             placeholder="Password"
             name="password"
-            minLength="6"
-            value={password} onChange={e=>onChange(e)}
+        
+            value={password} onChange={e=>setPassword(e.target.value)}
           />
         </div>
         <div className="form-group">
@@ -68,8 +62,8 @@ const Register = () => {
             type="password"
             placeholder="Confirm Password"
             name="password2"
-            minLength="6"
-            value={password2} onChange={e=>onChange(e)}
+        
+            value={confirm} onChange={e=>setConfirm(e.target.value)}
 
           />
         </div>
@@ -83,4 +77,4 @@ const Register = () => {
     )
 }
 
-export default Register
+export default connect(null, {setAlert, register})(Register);
